@@ -1,14 +1,14 @@
 # previsao
-Consulte dados do inmet via cli
+Consulte a previsão do tempo do INMET via cli
 
 ```
-npx previsao Brasilia
-```
-
-```
-npx previsao Cidade
+npx previsao brasilia
 ```
 
 ```
-npx previsao CodigoIBGE
+npx previsao [cidade]
+```
+
+```
+npx previsao [codigoIBGE]
 ```
