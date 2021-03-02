@@ -62,22 +62,47 @@ function queryPrevMet(id) {
     });
 }
 
+const map = {
+    'S': '⇑',
+    'N': '⇓',
+    'E': '⇐',
+    'W': '⇒',
+    'SE': '⇖',
+    'Sw': '⇗',
+    'NW': '⇘',
+    'NE': '⇙'
+}
+function getArrow(direction) {
+    return map[direction];
+}
+
 function prettyPrint(data) {
-    for (let day in data) {
+    console.log('\n');
+    let keys = Object.keys(data).reverse();
+
+    for (let day of keys) {
         let item = data[day];
-        console.log(`- ${day}`);
+        console.log(`\x1b[1m\x1b[4m● ${day}${checkIfToday(day)}\x1b[0m`);
+
         for (let period in item) {
             let p = item[period];
             let string_period = getString(period);
-            console.log(`
-            ${string_period}:
-                ${p.resumo}
-                Vento: ${p.dir_vento} ${p.int_vento.toLowerCase()}
-                Temperatura: ${p.temp_min}º min / ${p.temp_max}º max
-                Umidade: ${p.umidade_min}% min / ${p.umidade_max}% max`)
+            let dir = p.dir_vento.split('-');
+
+            console.log('\x1b[1m', `
+            \x1b[4m● ${string_period}\x1b[0m (${p.resumo})`);
+
+            console.log(`              
+              Temperatura: ${p.temp_min}º min / ${p.temp_max}º max
+              Vento: ${p.dir_vento} ${p.int_vento.toLowerCase()} ${getArrow(dir[0])} - ${getArrow(dir[1])}
+              Umidade: ${p.umidade_min}% min / ${p.umidade_max}% max`)
         }
         console.log('\n');
     }
+}
+
+function checkIfToday(day) {
+    return '';
 }
 
 let translate = {
