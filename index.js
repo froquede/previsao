@@ -1,5 +1,5 @@
 const query = process.argv[2];
-if (!query) return console.error('Exemplo de uso: npx previsao Brasilia');
+if (!query) return console.error('Exemplo de uso: \x1b[1mnpx previsao brasilia\x1b[0m');
 
 const latinize = require('latinize');
 const https = require('https');
@@ -28,7 +28,7 @@ fs.stat(ibge_path, err => {
 function findPlace() {
     for (let i = 0; i < ibge_data.length; i++) {
         let item = ibge_data[i];
-        if (item.id === query || latinize(item.nome.toLowerCase()) === latinize(query.toLowerCase())) {
+        if (item.id === query || (latinize(item.nome.toLowerCase()) === latinize(query.toLowerCase())) && item.id > 1000) {
             queryPrevMet(item.id);
         }
     }
@@ -38,7 +38,7 @@ function queryPrevMet(id) {
     let url = `https://apiprevmet3.inmet.gov.br/previsao/${id}`;
     getHTTPS(url).then(data => {
         let result = data[id];
-        if (!result) return console.error(`Dados do id ${id} não encontrados.`);
+        if (!result) return console.error(`Dados do id ${id} não encontrados. ${(data || {}).error || ''}`);
 
         let resumed = {};
         for (let day in result) {
@@ -58,7 +58,7 @@ function queryPrevMet(id) {
             }
         }
 
-        prettyPrint(resumed);
+        prettyPrint(resumed, id);
     });
 }
 
@@ -68,7 +68,7 @@ const map = {
     'E': '⇐',
     'W': '⇒',
     'SE': '⇖',
-    'Sw': '⇗',
+    'SW': '⇗',
     'NW': '⇘',
     'NE': '⇙'
 }
@@ -76,25 +76,31 @@ function getArrow(direction) {
     return map[direction];
 }
 
-function prettyPrint(data) {
-    console.log('\n');
+function prettyPrint(data, id) {
+    let cityLog = false;
     let keys = Object.keys(data).reverse();
 
     for (let day of keys) {
         let item = data[day];
+        if (!cityLog) {
+            console.log(`\n\n\x1b[1m\x1b[4m${item.manha.entidade} - ${item.manha.uf} (COD. IBGE ${id})\x1b[0m`)
+            cityLog = true;
+            console.log('\n');
+        }
+
         console.log(`\x1b[1m\x1b[4m● ${day}${checkIfToday(day)}\x1b[0m`);
 
         for (let period in item) {
             let p = item[period];
             let string_period = getString(period);
-            let dir = p.dir_vento.split('-');
+            let dir = (p.dir_vento || '').split('-');
 
             console.log('\x1b[1m', `
             \x1b[4m● ${string_period}\x1b[0m (${p.resumo})`);
 
             console.log(`              
               Temperatura: ${p.temp_min}º min / ${p.temp_max}º max
-              Vento: ${p.dir_vento} ${p.int_vento.toLowerCase()} ${getArrow(dir[0])} - ${getArrow(dir[1])}
+              Vento: ${p.dir_vento} ${(p.int_vento || '').toLowerCase()} ${getArrow(dir[0])} - ${getArrow(dir[1])}
               Umidade: ${p.umidade_min}% min / ${p.umidade_max}% max`)
         }
         console.log('\n');
