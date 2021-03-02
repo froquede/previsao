@@ -1,0 +1,27 @@
+{
+  "name": "previsao",
+  "version": "1.1.2",
+  "description": "Consulte dados do inmet via cli",
+  "main": "index.js",
+  "dependencies": {
+    "latinize": "^0.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roquef/previsao.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/roquef/previsao/issues"
+  },
+  "homepage": "https://github.com/roquef/previsao#readme",
+  "bin": {
+    "previsao": "./bin/index.js"
+  },
+  "preferGlobal": true
+}
