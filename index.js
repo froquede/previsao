@@ -17,6 +17,8 @@ fs.stat(ibge_path, err => {
             fs.writeFile(ibge_path, JSON.stringify(data, null, 4), (err) => {
                 if (err) { console.log(err); }
             });
+        }).catch(err => {
+            console.log(err);
         });
     }
     else {
@@ -128,7 +130,11 @@ function getHTTPS(url) {
                 data += chunk;
             });
             res.on('end', () => {
-                resolve(JSON.parse(data));
+                try {
+                    resolve(JSON.parse(data));
+                } catch (err) {
+                    console.log(url, '\n\n', data);
+                }
             });
         }).on("error", (err) => {
             reject(err.message);
